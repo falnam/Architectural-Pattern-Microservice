@@ -34,7 +34,7 @@ Microservices adalah pola arsitektur di mana aplikasi dibagi menjadi beberapa la
 
 Sebelum memulai, pastikan Anda telah menginstall:
 
-- **Java 17** atau lebih tinggi
+- **Java 21** atau lebih tinggi
 - **Eclipse IDE** atau IntelliJ IDEA
 - **Maven** (biasanya sudah terintegrasi dengan IDE)
 - **Postman** atau tools API testing lainnya
@@ -82,7 +82,7 @@ microservices-project/
 3. Konfigurasi:
    - **Name**: `eureka-server`
    - **Type**: `Maven`
-   - **Java Version**: `17`
+   - **Java Version**: `21`
 
 #### b. Dependencies
 Pilih dependencies berikut:

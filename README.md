@@ -8,28 +8,6 @@
 - **Monolithic**: Seperti rumah besar dengan semua ruangan tergabung - jika satu ruangan rusak, seluruh rumah terganggu
 - **Microservices**: Seperti kompleks perumahan dengan rumah-rumah kecil terpisah - jika satu rumah rusak, rumah lain tetap berfungsi normal
 
-## 🏢 Analogi Real World
-
-Bayangkan sebuah **Mall/Pusat Perbelanjaan**:
-
-### Pendekatan Monolithic (Mall Tradisional)
-- Satu bangunan besar dengan semua toko di dalamnya
-- Jika listrik mati, seluruh mall gelap
-- Sulit renovasi karena mengganggu seluruh mall
-- Semua toko harus buka/tutup bersamaan
-
-### Pendekatan Microservices (Food Court Modern)
-- **Food Court** = API Gateway (pintu masuk utama)
-- **Directory/Peta Mall** = Eureka Server (yang tahu lokasi semua toko)
-- **Toko KFC** = User Service (khusus layani data pengguna)
-- **Toko Pizza Hut** = Product Service (khusus layani data produk)
-
-**Keuntungan:**
-- Setiap toko punya listrik sendiri
-- Renovasi satu toko tidak ganggu yang lain
-- Jam buka bisa berbeda-beda
-- Jika KFC tutup, Pizza Hut tetap buka
-
 ## 🏪 Real Case: Sistem E-Commerce
 
 Kita akan membangun sistem e-commerce sederhana dengan komponen:

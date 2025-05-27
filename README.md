@@ -1,15 +1,5 @@
 # Microservices Architecture dengan Spring Boot
 
-## 📋 Daftar Isi
-- [Pengenalan](#pengenalan)
-- [Prasyarat](#prasyarat)
-- [Arsitektur Sistem](#arsitektur-sistem)
-- [Setup Project](#setup-project)
-- [Implementasi](#implementasi)
-- [Testing](#testing)
-- [Komunikasi Antar Service](#komunikasi-antar-service)
-- [Troubleshooting](#troubleshooting)
-
 ## 🎯 Pengenalan
 
 Tutorial ini akan membantu Anda memahami dan mengimplementasikan **Microservices Architecture** menggunakan Spring Boot. Kita akan membangun sistem yang terdiri dari 4 komponen utama:

@@ -1,106 +1,124 @@
-# Microservices Architecture dengan Spring Boot
+# Microservices dengan Spring Boot
 
-## 🎯 Pengenalan
+## 🎯 Penjelasan Singkat
 
-Tutorial ini akan membantu Anda memahami dan mengimplementasikan **Microservices Architecture** menggunakan Spring Boot. Kita akan membangun sistem yang terdiri dari 4 komponen utama:
+**Microservices** adalah cara membangun aplikasi dengan membaginya menjadi bagian-bagian kecil yang independen. Setiap bagian bertanggung jawab atas satu fungsi spesifik dan dapat berjalan sendiri.
 
-- **Eureka Server** - Service Registry
-- **User Service** - Layanan pengelolaan pengguna
-- **Product Service** - Layanan pengelolaan produk
-- **API Gateway** - Pintu gerbang untuk mengakses semua layanan
+**Perbedaan dengan Monolithic:**
+- **Monolithic**: Seperti rumah besar dengan semua ruangan tergabung - jika satu ruangan rusak, seluruh rumah terganggu
+- **Microservices**: Seperti kompleks perumahan dengan rumah-rumah kecil terpisah - jika satu rumah rusak, rumah lain tetap berfungsi normal
 
-### 🔍 Apa itu Microservices?
+## 🏢 Analogi Real World
 
-Microservices adalah pola arsitektur di mana aplikasi dibagi menjadi beberapa layanan kecil yang:
-- Berjalan secara independen
-- Berkomunikasi melalui API
-- Dapat dikembangkan dan dideploy secara terpisah
-- Memiliki database terpisah
+Bayangkan sebuah **Mall/Pusat Perbelanjaan**:
 
-### ✅ Kelebihan Microservices
-- Tim dapat bekerja paralel
-- Deployment independen
-- Skalabilitas per layanan
-- Fault tolerance
-- Teknologi yang beragam
+### Pendekatan Monolithic (Mall Tradisional)
+- Satu bangunan besar dengan semua toko di dalamnya
+- Jika listrik mati, seluruh mall gelap
+- Sulit renovasi karena mengganggu seluruh mall
+- Semua toko harus buka/tutup bersamaan
 
-### ❌ Kekurangan Microservices
-- Kompleksitas tinggi
-- Infrastruktur tambahan
-- Latensi komunikasi
-- Debugging yang sulit
+### Pendekatan Microservices (Food Court Modern)
+- **Food Court** = API Gateway (pintu masuk utama)
+- **Directory/Peta Mall** = Eureka Server (yang tahu lokasi semua toko)
+- **Toko KFC** = User Service (khusus layani data pengguna)
+- **Toko Pizza Hut** = Product Service (khusus layani data produk)
 
-## 🛠 Prasyarat
+**Keuntungan:**
+- Setiap toko punya listrik sendiri
+- Renovasi satu toko tidak ganggu yang lain
+- Jam buka bisa berbeda-beda
+- Jika KFC tutup, Pizza Hut tetap buka
 
-Sebelum memulai, pastikan Anda telah menginstall:
+## 🏪 Real Case: Sistem E-Commerce
 
-- **Java 21** atau lebih tinggi
-- **Eclipse IDE** atau IntelliJ IDEA
-- **Maven** (biasanya sudah terintegrasi dengan IDE)
-- **Postman** atau tools API testing lainnya
+Kita akan membangun sistem e-commerce sederhana dengan komponen:
 
-## 🏗 Arsitektur Sistem
+1. **User Service**: Mengelola data pelanggan (register, login, profil)
+2. **Product Service**: Mengelola data produk (katalog, harga, stok)
+3. **API Gateway**: Pintu masuk untuk semua request dari aplikasi web/mobile
+4. **Eureka Server**: Direktori yang tahu dimana semua service berada
 
-```
-Client Request
-     ↓
-API Gateway (8083)
-     ↓
-┌─────────────────┬─────────────────┐
-│   User Service  │ Product Service │
-│     (8081)      │     (8082)      │
-└─────────────────┴─────────────────┘
-     ↓                    ↓
-Eureka Server (8761)
-```
+**Skenario Penggunaan:**
+- Customer buka aplikasi e-commerce
+- Aplikasi kirim request ke API Gateway
+- Gateway forward ke User Service untuk data profil
+- Gateway forward ke Product Service untuk data katalog
+- Semua data dikembalikan ke aplikasi customer
 
-## 📁 Setup Project
-
-### 1. Struktur Folder
-
-Buat struktur folder untuk workspace:
+## 📁 Struktur Project
 
 ```
-microservices-project/
-├── eureka-server/
-├── user-service/
-├── product-service/
-└── api-gateway/
+microservices-ecommerce/
+├── eureka-server/          # Service Registry
+├── api-gateway/           # Pintu masuk utama
+├── user-service/          # Service untuk data user
+└── product-service/       # Service untuk data produk
 ```
 
-### 2. Workspace Eclipse
+## 🚀 Langkah-langkah Implementasi
 
-**Penting**: Setiap service harus dibuka di Eclipse workspace yang terpisah!
+### STEP 1: Persiapan Workspace
 
-## 🚀 Implementasi
+1. Buat folder utama: `microservices-ecommerce`
+2. Di dalamnya buat 4 subfolder:
+   ```
+   microservices-ecommerce/
+   ├── eureka-server/
+   ├── api-gateway/
+   ├── user-service/
+   └── product-service/
+   ```
 
-### 1. Eureka Server
+**⚠️ PENTING**: Setiap service harus dibuka di Eclipse yang terpisah dengan workspace yang berbeda!
 
-#### a. Buat Project Baru
-1. Buka Eclipse dengan workspace `eureka-server`
+---
+
+### STEP 2: Membuat Eureka Server (Service Registry)
+
+**Analogi**: Eureka Server seperti buku telepon/direktori mall yang tahu alamat semua toko.
+
+#### 2.1 Setup Project
+
+1. Buka Eclipse → pilih workspace: `microservices-ecommerce/eureka-server`
 2. File → New → Project → Spring Starter Project
-3. Konfigurasi:
+3. Isi detail:
    - **Name**: `eureka-server`
-   - **Type**: `Maven`
-   - **Java Version**: `21`
+   - **Type**: Maven
+   - **Java Version**: 17
+   - **Group**: `com.ecommerce`
+   - **Artifact**: `eureka-server`
 
-#### b. Dependencies
-Pilih dependencies berikut:
-- **Eureka Server**
-- **Spring Boot Actuator**
+4. Pilih Dependencies:
+   - ✅ **Eureka Server**
+   - ✅ **Spring Boot Actuator**
 
-#### c. Konfigurasi
+#### 2.2 Struktur Folder Eureka Server
+```
+eureka-server/
+├── src/
+│   └── main/
+│       ├── java/
+│       │   └── com/ecommerce/eurekaserver/
+│       │       └── EurekaServerApplication.java
+│       └── resources/
+│           └── application.properties
+├── pom.xml
+└── target/
+```
 
-**EurekaServerApplication.java**
+#### 2.3 Konfigurasi Code
+
+**File: `EurekaServerApplication.java`**
 ```java
-package com.example.demo;
+package com.ecommerce.eurekaserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 
 @SpringBootApplication
-@EnableEurekaServer
+@EnableEurekaServer  // 👈 Ini yang bikin jadi Eureka Server
 public class EurekaServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(EurekaServerApplication.class, args);
@@ -108,44 +126,84 @@ public class EurekaServerApplication {
 }
 ```
 
-**application.properties**
+**File: `application.properties`**
 ```properties
+# Nama aplikasi
 spring.application.name=eureka-server
+
+# Port untuk Eureka Server (standar 8761)
 server.port=8761
+
+# Eureka tidak perlu register ke dirinya sendiri
 eureka.client.register-with-eureka=false
 eureka.client.fetch-registry=false
 ```
 
-### 2. User Service
+**Penjelasan Konfigurasi:**
+- `@EnableEurekaServer`: Mengaktifkan fungsi Eureka Server
+- `register-with-eureka=false`: Server tidak register ke dirinya sendiri
+- `fetch-registry=false`: Server tidak ambil data registry dari tempat lain
 
-#### a. Setup Project
-1. Buka Eclipse baru dengan workspace `user-service`
-2. Buat Spring Starter Project dengan nama `user-service`
+---
 
-#### b. Dependencies
-- **Spring Web**
-- **Eureka Discovery Client**
-- **Spring Boot Actuator**
+### STEP 3: Membuat User Service
 
-#### c. Konfigurasi
+**Analogi**: User Service seperti toko yang khusus jual informasi customer (KTP, alamat, dll).
 
-**application.properties**
+#### 3.1 Setup Project
+
+1. Buka Eclipse baru → workspace: `microservices-ecommerce/user-service`
+2. Buat Spring Starter Project:
+   - **Name**: `user-service`
+   - **Group**: `com.ecommerce`
+   - **Artifact**: `user-service`
+
+3. Dependencies:
+   - ✅ **Spring Web** (untuk REST API)
+   - ✅ **Eureka Discovery Client** (untuk register ke Eureka)
+   - ✅ **Spring Boot Actuator** (untuk monitoring)
+
+#### 3.2 Struktur Folder User Service
+```
+user-service/
+├── src/
+│   └── main/
+│       ├── java/
+│       │   └── com/ecommerce/userservice/
+│       │       ├── UserServiceApplication.java
+│       │       ├── controller/
+│       │       │   └── UserController.java
+│       │       └── model/
+│       │           └── User.java
+│       └── resources/
+│           └── application.properties
+└── pom.xml
+```
+
+#### 3.3 Konfigurasi Code
+
+**File: `application.properties`**
 ```properties
+# Port untuk User Service
 server.port=8081
+
+# Nama service (harus unik)
 spring.application.name=user-service
+
+# Alamat Eureka Server untuk register
 eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
 ```
 
-**UserServiceApplication.java**
+**File: `UserServiceApplication.java`**
 ```java
-package com.example.demo;
+package com.ecommerce.userservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
-@EnableDiscoveryClient
+@EnableDiscoveryClient  // 👈 Ini yang bikin service register ke Eureka
 public class UserServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(UserServiceApplication.class, args);
@@ -153,52 +211,126 @@ public class UserServiceApplication {
 }
 ```
 
-#### d. Controller
-
-Buat package `com.example.demo.controller` dan file `UserController.java`:
-
+**File: `model/User.java`**
 ```java
-package com.example.demo.controller;
+package com.ecommerce.userservice.model;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+public class User {
+    private Long id;
+    private String name;
+    private String email;
+    private String phone;
+    
+    // Constructor
+    public User() {}
+    
+    public User(Long id, String name, String email, String phone) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+    }
+    
+    // Getters dan Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+}
+```
+
+**File: `controller/UserController.java`**
+```java
+package com.ecommerce.userservice.controller;
+
+import org.springframework.web.bind.annotation.*;
+import com.ecommerce.userservice.model.User;
+import java.util.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/users")  // Base URL: /users
 public class UserController {
     
-    @GetMapping("/")
-    public String getUser() {
-        return "Test User";
+    // Data dummy untuk simulasi database
+    private List<User> users = Arrays.asList(
+        new User(1L, "John Doe", "john@email.com", "081234567890"),
+        new User(2L, "Jane Smith", "jane@email.com", "081234567891"),
+        new User(3L, "Bob Johnson", "bob@email.com", "081234567892")
+    );
+    
+    // GET /users - Ambil semua user
+    @GetMapping
+    public List<User> getAllUsers() {
+        return users;
+    }
+    
+    // GET /users/{id} - Ambil user berdasarkan ID
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable Long id) {
+        return users.stream()
+                   .filter(user -> user.getId().equals(id))
+                   .findFirst()
+                   .orElse(null);
+    }
+    
+    // GET /users/info - Info service
+    @GetMapping("/info")
+    public String getServiceInfo() {
+        return "User Service is running on port 8081";
     }
 }
 ```
 
-### 3. Product Service
+---
 
-#### a. Setup Project
-1. Buka Eclipse baru dengan workspace `product-service`
-2. Buat Spring Starter Project dengan nama `product-service`
+### STEP 4: Membuat Product Service
 
-#### b. Dependencies
-Same sebagai User Service:
-- **Spring Web**
-- **Eureka Discovery Client**
-- **Spring Boot Actuator**
+**Analogi**: Product Service seperti toko yang khusus jual katalog produk (nama, harga, stok).
 
-#### c. Konfigurasi
+#### 4.1 Setup Project
 
-**application.properties**
+1. Eclipse baru → workspace: `microservices-ecommerce/product-service`
+2. Dependencies sama dengan User Service:
+   - ✅ **Spring Web**
+   - ✅ **Eureka Discovery Client**
+   - ✅ **Spring Boot Actuator**
+
+#### 4.2 Struktur Folder Product Service
+```
+product-service/
+├── src/
+│   └── main/
+│       ├── java/
+│       │   └── com/ecommerce/productservice/
+│       │       ├── ProductServiceApplication.java
+│       │       ├── controller/
+│       │       │   └── ProductController.java
+│       │       └── model/
+│       │           └── Product.java
+│       └── resources/
+│           └── application.properties
+└── pom.xml
+```
+
+#### 4.3 Konfigurasi Code
+
+**File: `application.properties`**
 ```properties
 server.port=8082
 spring.application.name=product-service
 eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
 ```
 
-**ProductServiceApplication.java**
+**File: `ProductServiceApplication.java`**
 ```java
-package com.example.demo;
+package com.ecommerce.productservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -213,57 +345,122 @@ public class ProductServiceApplication {
 }
 ```
 
-#### d. Controller
-
-Buat `ProductController.java`:
-
+**File: `model/Product.java`**
 ```java
-package com.example.demo.controller;
+package com.ecommerce.productservice.model;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+public class Product {
+    private Long id;
+    private String name;
+    private String description;
+    private Double price;
+    private Integer stock;
+    
+    // Constructor
+    public Product() {}
+    
+    public Product(Long id, String name, String description, Double price, Integer stock) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stock = stock;
+    }
+    
+    // Getters dan Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
+    
+    public Integer getStock() { return stock; }
+    public void setStock(Integer stock) { this.stock = stock; }
+}
+```
+
+**File: `controller/ProductController.java`**
+```java
+package com.ecommerce.productservice.controller;
+
+import org.springframework.web.bind.annotation.*;
+import com.ecommerce.productservice.model.Product;
+import java.util.*;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
     
-    @GetMapping("/")
-    public String getProduct() {
-        return "Test Product";
+    // Data dummy produk
+    private List<Product> products = Arrays.asList(
+        new Product(1L, "Laptop", "Gaming Laptop 16GB RAM", 15000000.0, 10),
+        new Product(2L, "Mouse", "Wireless Gaming Mouse", 500000.0, 25),
+        new Product(3L, "Keyboard", "Mechanical RGB Keyboard", 1200000.0, 15)
+    );
+    
+    // GET /products - Ambil semua produk
+    @GetMapping
+    public List<Product> getAllProducts() {
+        return products;
+    }
+    
+    // GET /products/{id} - Ambil produk berdasarkan ID
+    @GetMapping("/{id}")
+    public Product getProductById(@PathVariable Long id) {
+        return products.stream()
+                      .filter(product -> product.getId().equals(id))
+                      .findFirst()
+                      .orElse(null);
+    }
+    
+    // GET /products/info - Info service
+    @GetMapping("/info")
+    public String getServiceInfo() {
+        return "Product Service is running on port 8082";
     }
 }
 ```
 
-### 4. API Gateway
+---
 
-#### a. Setup Project
-1. Buka Eclipse baru dengan workspace `api-gateway`
-2. Buat Spring Starter Project dengan nama `api-gateway`
+### STEP 5: Membuat API Gateway
 
-#### b. Dependencies
-- **Eureka Discovery Client**
-- **Spring Boot Actuator**
+**Analogi**: API Gateway seperti security/receptionist mall yang mengatur semua tamu yang masuk dan mengarahkan ke toko yang tepat.
 
-#### c. Tambah Dependencies Manual
+#### 5.1 Setup Project
 
-Edit `pom.xml` dan tambahkan:
+1. Eclipse baru → workspace: `microservices-ecommerce/api-gateway`
+2. Dependencies:
+   - ✅ **Eureka Discovery Client**
+   - ✅ **Spring Boot Actuator**
 
+#### 5.2 Tambah Dependencies Manual
+
+Karena Spring Cloud Gateway tidak ada di starter, tambah manual di `pom.xml`:
+
+**File: `pom.xml`** (tambahkan di dalam `<dependencies>`)
 ```xml
 <dependencies>
     <!-- Dependencies yang sudah ada -->
     
+    <!-- Tambahan untuk Gateway -->
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-webflux</artifactId>
     </dependency>
-    
     <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-starter-gateway</artifactId>
     </dependency>
 </dependencies>
 
+<!-- Tambahkan juga dependency management -->
 <dependencyManagement>
     <dependencies>
         <dependency>
@@ -277,27 +474,45 @@ Edit `pom.xml` dan tambahkan:
 </dependencyManagement>
 ```
 
-#### d. Konfigurasi
+#### 5.3 Struktur Folder API Gateway
+```
+api-gateway/
+├── src/
+│   └── main/
+│       ├── java/
+│       │   └── com/ecommerce/apigateway/
+│       │       └── ApiGatewayApplication.java
+│       └── resources/
+│           └── application.properties
+└── pom.xml
+```
 
-**application.properties**
+#### 5.4 Konfigurasi Code
+
+**File: `application.properties`**
 ```properties
 server.port=8083
 spring.application.name=api-gateway
 eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
 
-# Routing Configuration
+# Routing untuk User Service
 spring.cloud.gateway.routes[0].id=user-service
 spring.cloud.gateway.routes[0].uri=lb://user-service
 spring.cloud.gateway.routes[0].predicates[0]=Path=/users/**
 
+# Routing untuk Product Service
 spring.cloud.gateway.routes[1].id=product-service
 spring.cloud.gateway.routes[1].uri=lb://product-service
 spring.cloud.gateway.routes[1].predicates[0]=Path=/products/**
 ```
 
-**ApiGatewayApplication.java**
+**Penjelasan Routing:**
+- `lb://user-service`: Load balancer akan cari service bernama "user-service"
+- `Path=/users/**`: Semua request yang mulai dengan `/users/` akan diarahkan ke user-service
+
+**File: `ApiGatewayApplication.java`**
 ```java
-package com.example.demo;
+package com.ecommerce.apigateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -312,66 +527,67 @@ public class ApiGatewayApplication {
 }
 ```
 
-## 🧪 Testing
+---
 
-### 1. Menjalankan Semua Service
+### STEP 6: Menjalankan Semua Service
 
-Jalankan service dalam urutan berikut:
-1. **Eureka Server** (8761)
-2. **User Service** (8081)  
-3. **Product Service** (8082)
-4. **API Gateway** (8083)
+#### 6.1 Urutan Menjalankan
+1. **Eureka Server** (port 8761) - harus pertama
+2. **User Service** (port 8081)
+3. **Product Service** (port 8082)
+4. **API Gateway** (port 8083) - harus terakhir
 
-### 2. Verifikasi Eureka Dashboard
+#### 6.2 Cara Menjalankan
+Di setiap Eclipse, klik kanan pada main class → Run As → Java Application
 
-Buka browser dan akses: `http://localhost:8761`
+#### 6.3 Verifikasi
+1. Buka browser: `http://localhost:8761`
+2. Cek apakah semua service terdaftar:
+   - USER-SERVICE
+   - PRODUCT-SERVICE
+   - API-GATEWAY
 
-Anda akan melihat semua service yang terdaftar.
+---
 
-### 3. Test API Endpoints
+### STEP 7: Testing API
 
-#### Via API Gateway:
+Gunakan Postman, browser, atau curl untuk test:
 
-**Test User Service:**
-```bash
-GET http://localhost:8083/users/
-Response: "Test User"
+#### 7.1 Test User Service via Gateway
+```
+GET http://localhost:8083/users
+GET http://localhost:8083/users/1
+GET http://localhost:8083/users/info
 ```
 
-**Test Product Service:**
-```bash
-GET http://localhost:8083/products/
-Response: "Test Product"
+#### 7.2 Test Product Service via Gateway
+```
+GET http://localhost:8083/products
+GET http://localhost:8083/products/1
+GET http://localhost:8083/products/info
 ```
 
-#### Via Direct Service:
+---
 
-**Direct User Service:**
-```bash
-GET http://localhost:8081/users/
-Response: "Test User"
-```
+### STEP 8: Komunikasi Antar Service
 
-**Direct Product Service:**
-```bash
-GET http://localhost:8082/products/
-Response: "Test Product"
-```
+Mari buat User Service bisa mengambil data dari Product Service.
 
-## 🔄 Komunikasi Antar Service
+#### 8.1 Update User Service
 
-### 1. Konfigurasi RestTemplate
-
-Tambahkan di `UserServiceApplication.java`:
-
+**File: `UserServiceApplication.java`** - tambah RestTemplate Bean
 ```java
+package com.ecommerce.userservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableDiscoveryClient
 public class UserServiceApplication {
-    
     public static void main(String[] args) {
         SpringApplication.run(UserServiceApplication.class, args);
     }
@@ -383,16 +599,15 @@ public class UserServiceApplication {
 }
 ```
 
-### 2. Update User Controller
-
+**File: `UserController.java`** - tambah method baru
 ```java
-package com.example.demo.controller;
+package com.ecommerce.userservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import com.ecommerce.userservice.model.User;
+import java.util.*;
 
 @RestController
 @RequestMapping("/users")
@@ -401,73 +616,97 @@ public class UserController {
     @Autowired
     private RestTemplate restTemplate;
     
-    @GetMapping("/")
-    public String getUser() {
-        return "Test User";
+    // ... method yang sudah ada ...
+    
+    // Method baru: User bisa lihat semua produk
+    @GetMapping("/products")
+    public String getUserProducts() {
+        try {
+            // Panggil Product Service via Gateway
+            String products = restTemplate.getForObject(
+                "http://localhost:8083/products", 
+                String.class
+            );
+            return "Products available for users: " + products;
+        } catch (Exception e) {
+            return "Error connecting to Product Service: " + e.getMessage();
+        }
     }
     
-    @GetMapping("/product")
-    public String getProductMessage() {
-        String productMessage = restTemplate.getForObject(
-            "http://localhost:8083/products/", 
-            String.class
-        );
-        return "User Service calling Product Service: " + productMessage;
+    // Method baru: User dashboard dengan info produk
+    @GetMapping("/{id}/dashboard")
+    public Map<String, Object> getUserDashboard(@PathVariable Long id) {
+        Map<String, Object> dashboard = new HashMap<>();
+        
+        // Ambil data user
+        User user = getUserById(id);
+        dashboard.put("user", user);
+        
+        // Ambil info produk service
+        try {
+            String productInfo = restTemplate.getForObject(
+                "http://localhost:8083/products/info", 
+                String.class
+            );
+            dashboard.put("productServiceStatus", productInfo);
+        } catch (Exception e) {
+            dashboard.put("productServiceStatus", "Product Service unavailable");
+        }
+        
+        return dashboard;
     }
 }
 ```
 
-### 3. Test Komunikasi Antar Service
-
-```bash
-GET http://localhost:8083/users/product
-Response: "User Service calling Product Service: Test Product"
+#### 8.2 Test Komunikasi Antar Service
 ```
-
-## 🔧 Troubleshooting
-
-### Common Issues:
-
-1. **Service tidak terdaftar di Eureka**
-   - Pastikan `@EnableDiscoveryClient` sudah ditambahkan
-   - Check konfigurasi `eureka.client.service-url.defaultZone`
-
-2. **Port sudah digunakan**
-   - Ganti port di `application.properties`
-   - Kill proses yang menggunakan port tersebut
-
-3. **Gateway routing tidak bekerja**
-   - Periksa konfigurasi routing di `application.properties`
-   - Pastikan service sudah terdaftar di Eureka
-
-4. **Dependencies error**
-   - Pastikan Spring Cloud version compatible
-   - Check `pom.xml` untuk missing dependencies
-
-### Health Check Endpoints:
-
-- Eureka: `http://localhost:8761/actuator/health`
-- User Service: `http://localhost:8081/actuator/health`
-- Product Service: `http://localhost:8082/actuator/health`
-- API Gateway: `http://localhost:8083/actuator/health`
-
-## 🎉 Kesimpulan
-
-Selamat! Anda telah berhasil mengimplementasikan Microservices Architecture dengan Spring Boot. Sistem yang telah dibuat mencakup:
-
-- ✅ Service Registry dengan Eureka Server
-- ✅ Multiple independent services
-- ✅ API Gateway untuk routing
-- ✅ Service-to-service communication
-- ✅ Load balancing dengan Ribbon
-
-### Next Steps:
-- Implementasi database untuk setiap service
-- Menambahkan authentication & authorization
-- Implementasi circuit breaker dengan Hystrix
-- Containerization dengan Docker
-- Monitoring dan logging terpusat
+GET http://localhost:8083/users/products
+GET http://localhost:8083/users/1/dashboard
+```
 
 ---
 
-**Happy Coding! 🚀**
+## 🎉 Hasil Akhir
+
+Setelah mengikuti tutorial ini, Anda akan memiliki:
+
+1. **Eureka Server** - Registry untuk semua service
+2. **User Service** - Kelola data pengguna
+3. **Product Service** - Kelola data produk
+4. **API Gateway** - Pintu masuk tunggal
+5. **Komunikasi antar service** - User bisa akses Product
+
+## 🔍 Debugging Tips
+
+### Jika Service Tidak Muncul di Eureka:
+1. Cek `application.properties` - pastikan nama service benar
+2. Cek apakah Eureka Server jalan di port 8761
+3. Cek annotation `@EnableDiscoveryClient` ada
+
+### Jika Gateway Tidak Bisa Route:
+1. Cek konfigurasi routing di `application.properties`
+2. Pastikan service sudah register ke Eureka
+3. Cek port tidak bentrok
+
+### Jika Komunikasi Antar Service Error:
+1. Cek URL yang dipanggil (harus via Gateway)
+2. Pastikan RestTemplate Bean sudah dibuat
+3. Cek network/firewall
+
+## 📚 Kesimpulan
+
+Microservices memberikan fleksibilitas dalam:
+- **Development**: Tim bisa kerja parallel
+- **Deployment**: Deploy service satu-satu
+- **Scaling**: Scale sesuai kebutuhan
+- **Maintenance**: Update tanpa ganggu yang lain
+
+Dengan tutorial ini, Anda sudah memahami dasar-dasar microservices dan siap untuk mengembangkan aplikasi yang lebih kompleks!
+
+## 🚀 Next Steps
+
+1. Tambah database (MySQL/PostgreSQL) ke setiap service
+2. Implementasi authentication dengan JWT
+3. Tambah monitoring dengan Spring Boot Admin
+4. Implementasi Circuit Breaker untuk fault tolerance
+5. Containerization dengan Docker
